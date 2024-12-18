@@ -1,9 +1,15 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
 const app: Application = express();
-const port = 3000;
 
-app.get("/", (req, res) => {
+app.use(express.json());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+  })
+);
+
+app.get("/", (req: Request, res: Response) => {
   res.send("Server is running 🏃‍♀️‍➡️");
 });
 
