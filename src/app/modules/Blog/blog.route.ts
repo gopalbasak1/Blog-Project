@@ -1,9 +1,9 @@
 import express from 'express';
 import { BlogController } from './blog.controller';
 import auth from '../../middleware/auth';
-import { USER_ROLE } from '../../Users/user.constant';
 import validateRequest from '../../middleware/validateRequest';
 import { BlogValidation } from './blog.validation';
+import { USER_ROLE } from '../Auth/Users/user.constant';
 
 const router = express.Router();
 
@@ -27,6 +27,6 @@ router.delete(
   BlogController.deleteBlog,
 );
 
-router.get('/', auth(USER_ROLE.user), BlogController.getAllBlogs);
+router.get('/', BlogController.getAllBlogs);
 
 export const BlogRoutes = router;

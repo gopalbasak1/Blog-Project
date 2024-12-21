@@ -1,7 +1,7 @@
 import express from 'express';
 import auth from '../../middleware/auth';
-import { USER_ROLE } from '../../Users/user.constant';
 import { AdminControllers } from './admins.controller';
+import { USER_ROLE } from '../Auth/Users/user.constant';
 
 const router = express.Router();
 

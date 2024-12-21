@@ -1,4 +1,6 @@
-import { User } from '../../Users/Users.model';
+import { StatusCodes } from 'http-status-codes';
+import AppError from '../../errors/AppError';
+import { User } from '../Auth/Users/Users.model';
 import { Blog } from '../Blog/blog.model';
 
 const blockUser = async (userId: string) => {
@@ -22,7 +24,7 @@ const deleteBlog = async (id: string) => {
   const blog = await Blog.findById(id);
 
   if (!blog) {
-    return null; // Blog not found
+    throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found');
   }
 
   // Delete the blog

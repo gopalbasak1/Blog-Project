@@ -24,7 +24,7 @@ class QueryBuilder<T> {
     }
     return this;
   }
-  //
+  //Filter method
 
   filter() {
     const queryObj = { ...this.query }; //copy
@@ -42,13 +42,13 @@ class QueryBuilder<T> {
 
   sort() {
     const sort =
-      (this?.query?.sort as string)?.split(',')?.join(' ') || '-createdAt';
+      (this?.query?.sort as string)?.split(',')?.join(' ') || '-createdAt'; // Default to descending createdAt
     this.modelQuery = this.modelQuery.sort(sort as string);
 
     return this;
   }
   //
-  //
+  //Fields selection method
 
   fields() {
     const fields =

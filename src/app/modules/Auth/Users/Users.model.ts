@@ -18,6 +18,7 @@ const userSchema = new Schema<TUser>(
     password: {
       type: String,
       required: true,
+      select: 0,
     },
     role: {
       type: String,
@@ -50,9 +51,5 @@ userSchema.post('save', function (doc, next) {
   doc.password = '';
   next();
 });
-
-// userSchema.static.isUserExistsByEmail = async function (email: string) {
-//   return await User.findOne({ email });
-// };
 
 export const User = model<TUser>('User', userSchema);

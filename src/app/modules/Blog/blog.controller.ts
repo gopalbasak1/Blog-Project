@@ -3,7 +3,6 @@ import catchAsync from '../../utilis/catchAsync';
 import sendResponse from '../../utilis/sendResponse';
 import { BlogServices } from './blog.service';
 import AppError from '../../errors/AppError';
-import { Blog } from './blog.model';
 
 const createBlog = catchAsync(async (req, res) => {
   const { title, content } = req.body;
@@ -78,15 +77,43 @@ const deleteBlog = catchAsync(async (req, res) => {
 });
 
 const getAllBlogs = catchAsync(async (req, res) => {
-  const result = await BlogServices.getAllBlogsFromDB(req.query);
-  console.log(result);
+  const { search, sortBy, sortOrder, filter } = req.query;
+
+  const blogs = await BlogServices.getAllBlogsFromDB({
+    search: search as string,
+    sortBy: sortBy as string,
+    sortOrder: sortOrder as string,
+    filter: filter as string,
+  });
+
+  // const result = await BlogServices.getAllBlogsFromDB(req.query);
+  //console.log(result);
   sendResponse(res, {
     success: true,
     message: 'Blogs fetched successfully',
     statusCode: StatusCodes.OK,
-    data: result,
+    data: blogs,
   });
 });
+
+// const getAllBlogs = catchAsync(async (req, res) => {
+//   const { search, sortBy, sortOrder, filter } = req.query;
+
+//   // Call the service to fetch blogs
+//   const blogs = await BlogServices.getAllBlogs({
+//     search: search as string,
+//     sortBy: sortBy as string,
+//     sortOrder: sortOrder as string,
+//     filter: filter as string,
+//   });
+
+//   sendResponse(res, {
+//     success: true,
+//     message: 'Blogs fetched successfully',
+//     statusCode: StatusCodes.OK,
+//     data: blogs,
+//   });
+// });
 
 export const BlogController = {
   createBlog,

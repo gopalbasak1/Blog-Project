@@ -1,9 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import config from '../../config';
 import AppError from '../../errors/AppError';
-import { User } from '../../Users/Users.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { User } from './Users/Users.model';
 
 const createUserIntoDB = async (
   name: string,
@@ -37,14 +37,14 @@ const authenticateUser = async (email: string, password: string) => {
   }
 
   // Is User exists checking
-  const user = await User.findOne({ email });
-  console.log(user);
+  const user = await User.findOne({ email }).select('+password');
+  //console.log(user);
   if (!user)
     throw new AppError(StatusCodes.NOT_FOUND, 'This user email is not found !');
 
   // Is User block checking
   const isUserBlocked = user?.isBlocked;
-  console.log(isUserBlocked);
+  //console.log(isUserBlocked);
   if (isUserBlocked)
     throw new AppError(StatusCodes.FORBIDDEN, 'This user is block !');
 

@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { StatusCodes } from 'http-status-codes';
 import AppError from '../../errors/AppError';
-import { User } from '../../Users/Users.model';
-import { GetBlogsParams, TBlog } from './blog.interface';
+import { TBlog } from './blog.interface';
 import { Blog } from './blog.model';
-import QueryBuilder from '../../builder/QueryBuilder';
-import { BlogSearchableFields } from './blog.constant';
+import { User } from '../Auth/Users/Users.model';
 
 const createBlog = async (title: string, content: string, email: string) => {
   // Find the user by email
@@ -40,20 +39,11 @@ const updateBlogIntoDB = async (
   // Check if the logged-in user is the author of the blog
   const user = await User.findById(blog.author);
   if (user?.email !== email) {
-    return null; // User is not authorized to update this blog
+    throw new AppError(
+      StatusCodes.UNAUTHORIZED,
+      'User is not authorized to update this blog',
+    );
   }
-
-  // // Update the blog with the provided payload
-  // Object.assign(blog, payload);
-  // const updatedBlog = await blog.save();
-
-  // // Populate author details for the response
-  // const populatedBlog = await Blog.findById(updatedBlog._id).populate(
-  //   'author',
-  //   'name email',
-  // );
-
-  //return populatedBlog;
 
   // Perform a partial update
   const updatedBlog = await Blog.findByIdAndUpdate(
@@ -73,23 +63,86 @@ const deleteBlogFromDB = async (id: string) => {
   }
 };
 
-const getAllBlogsFromDB = async (query: Record<string, unknown>) => {
-  const blogQuery = new QueryBuilder(
-    Blog.find().populate('author', 'name email'), // Populate author details
-    query,
-  )
-    .search(BlogSearchableFields) // Use the constant here
-    .filter() // Apply general filters
-    .sort() // Apply sorting
-    .fields(); // Select specific fields
+const getAllBlogsFromDB = async ({
+  search,
+  sortBy = 'createdAt',
+  sortOrder = 'desc',
+  filter,
+}: {
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  filter?: string;
+}) => {
+  const query: any = {};
 
-  const result = await blogQuery.modelQuery.exec(); // Execute the query
-  return result;
+  // Search blogs by title or content
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: 'i' } },
+      { content: { $regex: search, $options: 'i' } },
+    ];
+  }
+
+  // Filter blogs by author ID
+  if (filter) {
+    query.author = filter;
+  }
+
+  // Sorting
+  const sortCriteria: any = {};
+  sortCriteria[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+  // Fetch blogs from the database
+  const blogs = await Blog.find(query)
+    .sort(sortCriteria)
+    .populate('author', 'name email');
+
+  return blogs;
 };
+
+// const getAllBlogs = async ({
+//   search,
+//   sortBy = 'createdAt',
+//   sortOrder = 'desc',
+//   filter,
+// }: {
+//   search?: string;
+//   sortBy?: string;
+//   sortOrder?: string;
+//   filter?: string;
+// }) => {
+//   const query: any = {};
+
+//   // Search blogs by title or content
+//   if (search) {
+//     query.$or = [
+//       { title: { $regex: search, $options: 'i' } },
+//       { content: { $regex: search, $options: 'i' } },
+//     ];
+//   }
+
+//   // Filter blogs by author ID
+//   if (filter) {
+//     query.author = filter;
+//   }
+
+//   // Sorting
+//   const sortCriteria: any = {};
+//   sortCriteria[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+//   // Fetch blogs from the database
+//   const blogs = await Blog.find(query)
+//     .sort(sortCriteria)
+//     .populate('author', 'name email');
+
+//   return blogs;
+// };
 
 export const BlogServices = {
   createBlog,
   updateBlogIntoDB,
   deleteBlogFromDB,
   getAllBlogsFromDB,
+  //getAllBlogs,
 };

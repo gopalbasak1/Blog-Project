@@ -4,7 +4,7 @@ import catchAsync from '../utilis/catchAsync';
 import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
-import { TUserRole } from '../Users/user.constant';
+import { TUserRole } from '../modules/Auth/Users/user.constant';
 
 const auth = (...requiredRoles: TUserRole[]) => {
   // const auth = () => {
