@@ -18,10 +18,17 @@ const blockUser = async (userId: string) => {
 };
 
 const deleteBlog = async (id: string) => {
-  // Find and delete the blog by ID
-  const blog = await Blog.findByIdAndDelete(id);
+  // Find the blog by ID
+  const blog = await Blog.findById(id);
 
-  return blog; // Return the deleted blog or null if not found
+  if (!blog) {
+    return null; // Blog not found
+  }
+
+  // Delete the blog
+  await Blog.findByIdAndDelete(id);
+
+  return blog; // Return the blog that was deleted
 };
 
 export const AdminServices = { blockUser, deleteBlog };

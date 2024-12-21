@@ -22,6 +22,30 @@ const blockUser = catchAsync(async (req, res) => {
   });
 });
 
+const deleteBlog = catchAsync(async (req, res) => {
+  const { id: blogId } = req.params;
+  const blog = await AdminServices.deleteBlog(blogId);
+  console.log(blog);
+  if (!blog) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found!');
+  }
+
+  if (!blog) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      `Blog with ID ${blogId} not found!`,
+    );
+  }
+
+  sendResponse(res, {
+    success: true,
+    message: 'Blog deleted successfully',
+    statusCode: StatusCodes.OK,
+    data: blog,
+  });
+});
+
 export const AdminControllers = {
   blockUser,
+  deleteBlog,
 };
