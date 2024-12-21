@@ -3,6 +3,8 @@ import AppError from '../../errors/AppError';
 import { User } from '../../Users/Users.model';
 import { GetBlogsParams, TBlog } from './blog.interface';
 import { Blog } from './blog.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { BlogSearchableFields } from './blog.constant';
 
 const createBlog = async (title: string, content: string, email: string) => {
   // Find the user by email
@@ -71,43 +73,23 @@ const deleteBlogFromDB = async (id: string) => {
   }
 };
 
-const getBlogsFromDB = async ({
-  search,
-  sortBy = 'createdAt',
-  sortOrder = 'desc',
-  filter,
-}: GetBlogsParams) => {
-  const query: any = {};
+const getAllBlogsFromDB = async (query: Record<string, unknown>) => {
+  const blogQuery = new QueryBuilder(
+    Blog.find().populate('author', 'name email'), // Populate author details
+    query,
+  )
+    .search(BlogSearchableFields) // Use the constant here
+    .filter() // Apply general filters
+    .sort() // Apply sorting
+    .fields(); // Select specific fields
 
-  // Search by title or content
-  if (search) {
-    query.$or = [
-      { title: { $regex: search, $options: 'i' } }, // Case-insensitive search
-      { content: { $regex: search, $options: 'i' } },
-    ];
-  }
-
-  // Filter by author ID
-  if (filter) {
-    query.author = filter;
-  }
-
-  // Define sorting order
-  const sort = {
-    [sortBy]: sortOrder === 'asc' ? 1 : -1,
-  };
-
-  // Fetch blogs with author details populated
-  const blogs = await Blog.find(query)
-    .populate('author', 'name email') // Populate author details
-    .sort(sort);
-
-  return blogs;
+  const result = await blogQuery.modelQuery.exec(); // Execute the query
+  return result;
 };
 
 export const BlogServices = {
   createBlog,
   updateBlogIntoDB,
   deleteBlogFromDB,
-  getBlogsFromDB,
+  getAllBlogsFromDB,
 };

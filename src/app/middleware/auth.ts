@@ -10,8 +10,8 @@ const auth = (...requiredRoles: TUserRole[]) => {
   // const auth = () => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     //if the token is sent from the client
-    const token = req.headers.authorization;
-    console.log(token);
+    const token = req.headers.authorization?.split(' ')[1]; // Extract token from 'Bearer <token>'
+    console.log('Extracted Token:', token);
     if (!token) {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
     }
@@ -35,7 +35,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
         }
         // decoded undefined
 
-        req.user = decoded as JwtPayload & { id: string };
+        req.user = decoded as JwtPayload & { id: string; role: TUserRole };
         next();
       },
     );

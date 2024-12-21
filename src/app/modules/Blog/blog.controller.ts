@@ -3,6 +3,7 @@ import catchAsync from '../../utilis/catchAsync';
 import sendResponse from '../../utilis/sendResponse';
 import { BlogServices } from './blog.service';
 import AppError from '../../errors/AppError';
+import { Blog } from './blog.model';
 
 const createBlog = catchAsync(async (req, res) => {
   const { title, content } = req.body;
@@ -77,22 +78,13 @@ const deleteBlog = catchAsync(async (req, res) => {
 });
 
 const getAllBlogs = catchAsync(async (req, res) => {
-  const { search, sortBy, sortOrder, filter } = req.query;
-
-  // Call the service with query parameters
-  const blogs = await BlogServices.getBlogsFromDB({
-    search: search as string,
-    sortBy: sortBy as string,
-    sortOrder: sortOrder as 'asc' | 'desc',
-    filter: filter as string,
-  });
-  console.log(blogs);
-
+  const result = await BlogServices.getAllBlogsFromDB(req.query);
+  console.log(result);
   sendResponse(res, {
     success: true,
     message: 'Blogs fetched successfully',
     statusCode: StatusCodes.OK,
-    data: blogs,
+    data: result,
   });
 });
 
