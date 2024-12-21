@@ -30,4 +30,75 @@ const createBlog = catchAsync(async (req, res) => {
   });
 });
 
-export const BlogController = { createBlog };
+const updateBlog = catchAsync(async (req, res) => {
+  const { id } = req.params; // Extract blog ID from the request URL
+  const { title, content } = req.body; // Extract the fields to be updated
+  const { email } = req.user; // Extract the logged-in user's email from the token
+
+  if (!title && !content) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'At least one field (title or content) must be provided for update!',
+    );
+  }
+
+  // Call the service to update the blog
+  const updatedBlog = await BlogServices.updateBlogIntoDB(
+    id,
+    { title, content },
+    email,
+  );
+
+  if (!updatedBlog) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'Blog not found or you do not have permission to update this blog!',
+    );
+  }
+
+  sendResponse(res, {
+    success: true,
+    message: 'Blog updated successfully',
+    statusCode: StatusCodes.OK,
+    data: updatedBlog,
+  });
+});
+
+const deleteBlog = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await BlogServices.deleteBlogFromDB(id);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Blog is deleted successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
+const getAllBlogs = catchAsync(async (req, res) => {
+  const { search, sortBy, sortOrder, filter } = req.query;
+
+  // Call the service with query parameters
+  const blogs = await BlogServices.getBlogsFromDB({
+    search: search as string,
+    sortBy: sortBy as string,
+    sortOrder: sortOrder as 'asc' | 'desc',
+    filter: filter as string,
+  });
+  console.log(blogs);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Blogs fetched successfully',
+    statusCode: StatusCodes.OK,
+    data: blogs,
+  });
+});
+
+export const BlogController = {
+  createBlog,
+  updateBlog,
+  deleteBlog,
+  getAllBlogs,
+};

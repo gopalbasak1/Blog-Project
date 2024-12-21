@@ -35,7 +35,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
         }
         // decoded undefined
 
-        req.user = decoded as JwtPayload;
+        req.user = decoded as JwtPayload & { id: string };
         next();
       },
     );

@@ -6,3 +6,10 @@ export interface TBlog {
   author?: string;
   isPublished?: boolean;
 }
+
+export interface GetBlogsParams {
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  filter?: string;
+}

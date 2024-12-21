@@ -14,11 +14,19 @@ router.post(
   BlogController.createBlog,
 );
 
-// router.post(
-//   '/',
-//   authenticateUser,
-//   authorizeRoles('user'),
-//   BlogController.createBlog,
-// );
+router.patch(
+  '/:id',
+  auth(USER_ROLE.user), // Only logged-in users
+  validateRequest(BlogValidation.updatedBlogValidationSchema),
+  BlogController.updateBlog,
+);
+
+router.delete(
+  '/:id',
+  auth(USER_ROLE.user), // Only logged-in users
+  BlogController.deleteBlog,
+);
+
+router.get('/', auth(USER_ROLE.user), BlogController.getAllBlogs);
 
 export const BlogRoutes = router;
