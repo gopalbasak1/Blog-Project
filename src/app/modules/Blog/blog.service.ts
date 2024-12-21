@@ -76,7 +76,7 @@ const getAllBlogsFromDB = async ({
 }) => {
   const query: any = {};
 
-  // Search blogs by title or content
+  //This creates a condition to search for the keyword in title or content using MongoDB's $regex for partial, case-insensitive matches.
   if (search) {
     query.$or = [
       { title: { $regex: search, $options: 'i' } },
@@ -84,12 +84,14 @@ const getAllBlogsFromDB = async ({
     ];
   }
 
-  // Filter blogs by author ID
+  // This adds a condition to match the author field with the specified filter value (author's ID).
   if (filter) {
     query.author = filter;
   }
 
-  // Sorting
+  // This builds a sorting object for MongoDB's .sort() method:
+  // 1 for ascending order.
+  // -1 for descending order.
   const sortCriteria: any = {};
   sortCriteria[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
@@ -97,6 +99,10 @@ const getAllBlogsFromDB = async ({
   const blogs = await Blog.find(query)
     .sort(sortCriteria)
     .populate('author', 'name email');
+
+  //   find(query): Fetches blogs matching the query.
+  // .sort(sortCriteria): Sorts the blogs based on sortBy and sortOrder.
+  // .populate('author', 'name email'): Replaces the author field (ID) with the author's name and email.
 
   return blogs;
 };

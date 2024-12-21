@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../utilis/catchAsync';
 import sendResponse from '../../utilis/sendResponse';
@@ -6,7 +7,7 @@ import AppError from '../../errors/AppError';
 
 const createBlog = catchAsync(async (req, res) => {
   const { title, content } = req.body;
-  const { email } = req.user;
+  const email = req.user?.email;
 
   // Extract the user's ID from the authenticated request
 
@@ -18,7 +19,11 @@ const createBlog = catchAsync(async (req, res) => {
   }
 
   // Create the blog and retrieve populated author details
-  const newBlog = await BlogServices.createBlog(title, content, email);
+  const newBlog = await BlogServices.createBlog(
+    title,
+    content,
+    email as string,
+  );
 
   console.log(newBlog);
 
@@ -33,7 +38,7 @@ const createBlog = catchAsync(async (req, res) => {
 const updateBlog = catchAsync(async (req, res) => {
   const { id } = req.params; // Extract blog ID from the request URL
   const { title, content } = req.body; // Extract the fields to be updated
-  const { email } = req.user; // Extract the logged-in user's email from the token
+  const email = req.user?.email; // Extract the logged-in user's email from the token
 
   if (!title && !content) {
     throw new AppError(
@@ -46,7 +51,7 @@ const updateBlog = catchAsync(async (req, res) => {
   const updatedBlog = await BlogServices.updateBlogIntoDB(
     id,
     { title, content },
-    email,
+    email as string,
   );
 
   if (!updatedBlog) {

@@ -33,9 +33,16 @@ const auth = (...requiredRoles: TUserRole[]) => {
             'You are not authorized !',
           );
         }
+
+        // Type assertion for `decoded`
+        const { id, email } = decoded as JwtPayload & {
+          id: string;
+          role: TUserRole;
+          email?: string; // Optional email
+        };
         // decoded undefined
 
-        req.user = decoded as JwtPayload & { id: string; role: TUserRole };
+        req.user = { id, role, email };
         next();
       },
     );
