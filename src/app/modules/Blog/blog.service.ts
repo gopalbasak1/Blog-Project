@@ -33,7 +33,7 @@ const updateBlogIntoDB = async (
   const blog = await Blog.findById(id);
 
   if (!blog) {
-    return null; // Blog does not exist
+    throw new AppError(StatusCodes.NOT_FOUND, 'Blog does not exist');
   }
 
   // Check if the logged-in user is the author of the blog

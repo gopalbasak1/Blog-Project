@@ -9,7 +9,7 @@ const blockUser = async (userId: string) => {
   console.log(user);
 
   if (!user) {
-    return null; // User not found
+    throw new AppError(StatusCodes.NOT_FOUND, 'User not found!');
   }
 
   // Update the user's `isBlocked` property

@@ -11,7 +11,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     //if the token is sent from the client
     const token = req.headers.authorization?.split(' ')[1]; // Extract token from 'Bearer <token>'
-    console.log('Extracted Token:', token);
+    //console.log('Extracted Token:', token);
     if (!token) {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
     }

@@ -25,7 +25,7 @@ const createBlog = catchAsync(async (req, res) => {
     email as string,
   );
 
-  console.log(newBlog);
+  //console.log(newBlog);
 
   sendResponse(res, {
     success: true,

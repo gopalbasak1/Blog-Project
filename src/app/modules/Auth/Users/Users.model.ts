@@ -60,7 +60,7 @@ userSchema.pre('save', async function (next) {
   }
 
   // Hash the password
-  const saltRounds = Number(config.bcrypt_salt_rounds) || 10; // Default to 10 if not configured
+  const saltRounds = Number(config.bcrypt_salt_rounds) || 12; // Default to 12 if not configured
   user.password = await bcrypt.hash(user.password, saltRounds);
 
   next();
