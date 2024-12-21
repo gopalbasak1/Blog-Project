@@ -46,7 +46,7 @@ The goal of this project is to develop a backend for a blogging platform where u
 
 **Dependencies:** Node, Express, mongoose, dotenv, cors, JWT
 
-**Dependencies:** typescript, ts-node-dev, prettier, eslint-config-prettier, @typescript-eslint/_, @types/_
+**Dependencies:** typescript, ts-node-dev, prettier, eslint-config-prettier, @typescript-eslint/_, @types/_, bcrypt, cookie parser, zod, http-code-status.
 
 ## Prerequisites
 
